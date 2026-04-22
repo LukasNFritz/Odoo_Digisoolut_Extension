@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sh_inv_merge_res_setting_inherit_id_form" model="ir.ui.view">
+        <field name="name">sh.inv.merge.res.setting.inherit.id.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='pay_invoice_online_setting_container']" position="after">
+                <block title="Invoice Attachment Merge" id="invoice_attachment_merge">
+                    <setting string="Invoice Merge Pdf Reports">
+                        <field name="sh_inv_merge_pdf_report_bool"/>
+                    </setting>
+                    <setting string="Invoice Reports" 
+                        title="Selected Attachment will be Merge..." 
+                        invisible="sh_inv_merge_pdf_report_bool == False">
+                        <field name="sh_inv_merge_pdf_report_ids" widget="many2many_tags" />
+                    </setting>
+                    <setting string="Invoice merge attachment to reports"
+                        invisible="sh_inv_merge_pdf_report_bool == False">
+                        <field name="sh_inv_merge_pdf_attachment_bool"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

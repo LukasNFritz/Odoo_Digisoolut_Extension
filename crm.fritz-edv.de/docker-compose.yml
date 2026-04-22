@@ -1,0 +1,59 @@
+# Docker-Compose Odoo fritzedv-service
+
+#version: '3.6'
+name: crm.fritz-edv.de
+
+services:
+# Odoo Enterprise wird aus einem vorkonfigurierten Repository erzeugt - Image Version beachten !
+  odoo-ee-fritzedv:
+    image: spoke.digisoolut.me/odoo/intern/odoo-enterprise/odoo-enterprise-custom:V17-20250116-2
+    container_name: 'odoo-ee-fritzedv'
+    restart: always
+    depends_on:
+      - odoodb-ee-fritzedv
+# siehe ../readme
+    ports:
+      - "8069:8069"
+# muss identisch sein mit unten
+    environment:
+      - HOST=odoodb-ee-fritzedv
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+# config
+# siehe .conf: Master-DB-Passwort hier setzen
+      - ./odoo-ee.conf:/etc/odoo/odoo.conf
+# Dateien: Mount Point
+      - odoo-ee-fritzedv-web-data:/var/lib/odoo
+# normale Extensionen
+      - odoo-extensions-fritzedv:/mnt/extra-addons
+
+  odoodb-ee-fritzedv:
+    image: postgres:17
+    container_name: 'odoodb-ee-fritzedv'
+    restart: always
+# nur gebraucht, falls externer zugriff auf die db moeglich sein soll
+# ports:
+# - "5432:5432"
+# Namen ggf. anpassen - user/pw wie oben
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-ee-fritzedv-db-data:/var/lib/postgresql/data
+
+# Volumes: man beachte die gemeinsamen und getrennten
+volumes:
+  odoo-ee-fritzedv-web-data:
+    name: odoo-ee-fritzedv-web-data
+  odoo-ee-fritzedv-db-data:
+    name: odoo-ee-fritzedv-db-data
+  odoo-extensions-fritzedv:
+    name: odoo-extensions-fritzedv
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: /home/digisoolut/Docker/crm.fritz-edv.de/odoo-extensions
